@@ -6,6 +6,10 @@ function removeMonitoringSessionDiv(boxId) {
 	$('#boxes').children('#box-' + boxId).fadeOut(2000);
 }
 
+function resetCountdown(boxId, idleTime) {
+	$('#'+boxID+ ' .hasCountdown').countdown('change', { until: idleTime} );
+}
+
 var json = JSON.stringify;
 
 // Create a form for client and monitoring page
@@ -36,6 +40,8 @@ jQuery.fn.formBuilder = function(randNo, socket) {
 				})
 			);
 			
+			// Reset the countdown idle time on the client
+			resetCountdown(boxID, idleTime);
 		};
 		
 		// Setup an event listener onClick for the checkbox
@@ -50,11 +56,50 @@ jQuery.fn.formBuilder = function(randNo, socket) {
 				})
 			);
 			
+			// Reset the countdown idle time on the client
+			resetCountdown(boxID, idleTime);
 		};
 		
+		// Insert the title and timeout to the session div
 		$('<h3>', {innerHTML: 'Your Session: '+ randNo}).appendTo(div);
+		timeOutDiv = $('<div>', {innerHTML: 'This session will end in <br />'}).appendTo(div);
+		$('<span>').countdown(
+			{
+				until: idleTime
+				,format: 'MS'
+				// Set a callback function once the time's up
+				,onExpiry: function() {
+					// Send a message to the server to remove the expired session div on the 'All Clients' page
+					socket.send(json(
+						{
+							randNo: randNo
+							,event: 'close box'
+							,log: 'session ' + randNo + ' has reached its idle time on ' + new Date()
+						})
+					);
+					
+					// Fade out the countdown & remove the form
+					$('#' + boxID + ' div').fadeOut(1000);
+					$('#' + boxID + ' form').remove();
+					
+					// Put expiry notification message & show the start button
+					$('<span>', {innerHTML: 'This session has expired'}).hide().appendTo($('#' + boxID)).fadeIn(2000);
+					$('#appbox form').fadeIn(2000);
+				}
+			}
+		).appendTo(timeOutDiv);
 	} else { // Construct a session div for the 'All Clients' page
+		// Insert the title and internal timeout to the monitored session
 		$('<h3>', {innerHTML: 'Session: ' + randNo}).appendTo(div);
+		$('<span>').countdown(
+			{
+				until: idleRemoteTime
+				,format: 'MS'
+				,onExpiry: function() {
+					removeMonitoringSessionDiv(randNo);
+				}
+			}
+		).hide().appendTo(div);
 		
 	}
 	
