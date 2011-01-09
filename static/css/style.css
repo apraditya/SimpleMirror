@@ -201,9 +201,25 @@ button {  width: auto; overflow: visible; }
     Author: 
  */
 
+.monitor {
+  padding: 10px;
+}
 
+#boxes .monitor {
+  float: left;
+}
 
+#receiver {
+  background: #eee;
+  height: 90px;
+  margin: 0 0 15px;
+  overflow: auto;
+  width: 610px;
+}
 
+#receiver li {
+  margin-left: 20px;
+}
 
 
 
