@@ -65,14 +65,26 @@ server.get('/', function(req,res){
     locals : { 
               header: '#Header#'
              ,footer: '#Footer#'
-             ,title : 'Page Title'
-             ,description: 'Page Description'
-             ,author: 'Your Name'
+             ,title : 'Home'
+             ,description: 'Main page'
+             ,author: 'Adinda Praditya <apraditya@gmail.com>'
              ,analyticssiteid: 'XXXXXXX' 
             }
   });
 });
 
+server.get('/clients', function(req,res){
+   res.render('clients.ejs', {
+      locals: {
+              header: '#Header#'
+             ,footer: '#Footer#'
+             ,title : 'All Connected clients'
+             ,description: 'All connected clients in the following boxes'
+             ,author: 'Adinda Praditya'
+             ,analyticssiteid: 'XXXXXXX'
+      }
+   });
+});
 
 //A Route for Creating a 500 Error (Useful to keep around)
 server.get('/500', function(req, res){
